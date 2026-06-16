@@ -1,0 +1,1 @@
+"""Shrine-Codex API service."""
