@@ -7,7 +7,7 @@ from typing import Any, Dict, List
 from fastapi import FastAPI
 from pydantic import BaseModel, Field
 
-from app.config import RERANKER_DEVICE, RERANKER_MODEL
+from app.config import COHERE_RERANK_MODEL, RERANKER_BACKEND, RERANKER_DEVICE, RERANKER_MODEL
 from app.reranker import rerank, warmup
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)-7s | %(name)s | %(message)s")
@@ -33,7 +33,9 @@ app = FastAPI(title="Shrine-Codex Reranker Service", version="1.0.0", lifespan=l
 
 @app.get("/health")
 async def health():
-    return {"status": "ok", "model": RERANKER_MODEL, "device": RERANKER_DEVICE, "backend": "CrossEncoder"}
+    if RERANKER_BACKEND == "cohere":
+        return {"status": "ok", "backend": "cohere", "model": COHERE_RERANK_MODEL}
+    return {"status": "ok", "backend": "local", "model": RERANKER_MODEL, "device": RERANKER_DEVICE}
 
 
 @app.post("/rerank")
